@@ -11,6 +11,18 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def inputItem(self, text):
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys(text)
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
+
+    def check_item_is_in_table(self, item):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(item, [row.text for row in rows])
+
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Mark has heard of a new lists app and goes to the website to check it out
         self.browser.get("http://localhost:8000")
@@ -25,22 +37,12 @@ class NewVisitorTest(unittest.TestCase):
         self.assertEqual(inputbox.get_attribute('placeholder'), "Enter a to-do item")
 
         # He types Buy feathers into the text box
-        inputbox.send_keys('Buy feathers')
-        inputbox.send_keys(Keys.ENTER)
-
-        time.sleep(1)
+        self.inputItem('Buy feathers')
 
         # He types another input
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        inputbox.send_keys('Clean feathers')
-        inputbox.send_keys(Keys.ENTER)
-
-        time.sleep(1)
-
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Buy feathers', [row.text for row in rows])
-        self.assertIn('2: Clean feathers', [row.text for row in rows])
+        self.inputItem('Clean feathers')
+        self.check_item_is_in_table('1: Buy feathers')
+        self.check_item_is_in_table('2: Clean feathers')
 
         # There is still a textbox initing him to add another item
         
