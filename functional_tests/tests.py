@@ -83,6 +83,7 @@ class NewVisitorTest(LiveServerTestCase):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn("Buy machinessss", page_text)
 
+
         # Daniel starts a new list by entering item
         self.inputItem("Spend all of my excess money")
         self.wait_for_item_in_list_table("Spend all of my excess money")
