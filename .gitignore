@@ -127,7 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/lists/static
+/static
 .vscode/
-.enc
 .env
