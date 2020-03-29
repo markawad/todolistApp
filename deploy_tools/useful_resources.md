@@ -1,0 +1,2 @@
+## Some resources in the future that might be useful
+server_security=https://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers
