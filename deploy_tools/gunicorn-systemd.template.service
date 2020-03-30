@@ -9,7 +9,7 @@ EnvironmentFile=/home/markester/sites/DOMAIN/.env
 
 ExecStart=/home/markester/sites/DOMAIN/virtualenv/bin/gunicorn \
     --bind unix:/tmp/DOMAIN.socket \
-    APPNAME.wsgi:application
+    todolistApp.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

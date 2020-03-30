@@ -1,6 +1,6 @@
 import random
 from fabric.contrib.files import append, exists
-from fabric.api import cd, env, local, run
+from fabric.api import cd, env, local, run, sudo
 
 REPO_URL = 'https://github.com/markawad/todolistApp.git'
 
@@ -14,13 +14,16 @@ def deploy():
         _create_or_update_dotenv()
         _update_static_files()
         _update_database()
+        _create_nginx_file()
+        _create_systemd_service()
+        _start_servers()
 
 # This allows us to get the most recent source code from our repo
 def _get_latest_source():
     if exists('.git'):
         run('git fetch')
     else:
-        run(f'git clone {REPO_URL}')
+        run(f'git clone {REPO_URL} ../{env.host}')
     current_commit = local("git log -n 1 --format=%H", capture=True)
     run(f'git reset --hard {current_commit}')
 
@@ -45,3 +48,23 @@ def _update_static_files():
 
 def _update_database():
     run('./virtualenv/bin/python manage.py migrate --noinput')
+
+def _create_nginx_file():
+    if not exists(f'/etc/nginx/sites-available/{env.host}'):
+        sudo(f'cat ./deploy_tools/nginx.template.conf | \
+            sed "s/DOMAIN/{env.host}/g" | \
+            tee /etc/nginx/sites-available/{env.host}')
+        sudo(f'ln -s /etc/nginx/sites-available/{env.host} \
+            /etc/nginx/sites-enabled/{env.host}')
+
+def _create_systemd_service():
+    if not exists(f'/etc/systemd/system/gunicorn-{env.host}.service'):
+        sudo(f'cat ./deploy_tools/gunicorn-systemd.template.service | \
+            sed "s/DOMAIN/{env.host}/g" | \
+            tee /etc/systemd/system/gunicorn-{env.host}.service')
+
+def _start_servers():
+    sudo('systemctl daemon-reload')
+    sudo('nginx -s reload')
+    sudo(f'systemctl enable gunicorn-{env.host}')
+    sudo(f'systemctl start gunicorn-{env.host}')
