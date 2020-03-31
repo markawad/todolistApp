@@ -19,8 +19,18 @@ class FunctionalTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def wait_for(self, fn):
+        start_time = time.time()
+        while True:
+            try:
+                return fn()
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+
     def inputItem(self, text):
-        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox = self.wait_for(lambda: self.browser.find_element_by_id('id_new_item'))
         inputbox.send_keys(text)
         inputbox.send_keys(Keys.ENTER)
 
@@ -37,16 +47,6 @@ class FunctionalTest(StaticLiveServerTestCase):
                         break
                 self.assertIn(item, row_text)
                 return
-            except (AssertionError, WebDriverException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-
-    def wait_for(self, fn):
-        start_time = time.time()
-        while True:
-            try:
-                return fn()
             except (AssertionError, WebDriverException) as e:
                 if time.time() - start_time > MAX_WAIT:
                     raise e

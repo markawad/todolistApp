@@ -28,9 +28,8 @@ class ItemValidationTest(FunctionalTest):
         ))
 
         # He can then correct it by writing some text
-        self.inputItem("Hola")
-        self.wait_for_item_in_list_table('1: bananza')
+        self.wait_for(lambda: self.inputItem("Hola"))
+        self.wait_for_item_in_list_table('1: Bananzas')
         self.wait_for_item_in_list_table('2: Hola')
 
-        self.fail("finish this test!")
         
