@@ -30,7 +30,7 @@ class FunctionalTest(StaticLiveServerTestCase):
                 time.sleep(0.5)
 
     def inputItem(self, text):
-        inputbox = self.wait_for(lambda: self.browser.find_element_by_id('id_new_item'))
+        inputbox = self.wait_for(lambda: self.browser.find_element_by_id('id_text'))
         inputbox.send_keys(text)
         inputbox.send_keys(Keys.ENTER)
 
