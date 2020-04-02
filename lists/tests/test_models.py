@@ -1,6 +1,7 @@
 from django.test import TestCase
 from lists.models import Item, List
-from django.core.exceptions import ValidationError, IntegrityError
+from django.db.utils import IntegrityError
+from django.core.exceptions import ValidationError
 
 
 class ItemModelTest(TestCase):
